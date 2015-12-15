@@ -1,0 +1,18 @@
+defmodule TcpPing do
+  def listen do
+    {:ok, listener} = :gen_tcp.listen(5678, [:binary, active: false])
+    {:ok, socket} = :gen_tcp.accept(listener)
+    {:ok, received} = do_receive(socket)
+    IO.inspect received
+    :gen_tcp.send(socket, received)
+    :ok = :gen_tcp.close(socket)
+    received
+  end
+
+  defp do_receive(sock) do
+    case :gen_tcp.recv sock, 0 do
+      {:ok, something} -> {:ok, something}
+      _ -> :error
+    end
+  end
+end
